@@ -3,17 +3,16 @@ import java.util.Random;
 
 
 public class GameMap {
+	
+	private Tile[][] map;
 	private int mapX, mapY;
-	private ArrayList<ArrayList<Tile>> Map;
+	//private ArrayList<ArrayList<Tile>> Map;
 	
 	// default constructor will produce a 10 x 10 map
 	public GameMap(){
 		mapX = 10;
 		mapY = 10;
-		Map = new ArrayList<ArrayList<Tile>>(10);
-		for(ArrayList t : Map){
-			t = new ArrayList<Tile>(10);
-		}
+		map = new Tile[10][10];
 		
 		populateMap();
 	}
@@ -22,10 +21,7 @@ public class GameMap {
 	public GameMap(int X, int Y){
 		mapX = X;
 		mapY = Y;
-		Map = new ArrayList<ArrayList<Tile>>(X);
-		for(ArrayList t : Map){
-			t = new ArrayList<Tile>(Y);
-		}
+		map = new Tile[X][Y];
 		
 		populateMap();
 	}
@@ -34,7 +30,7 @@ public class GameMap {
 	public String displayMap(int type){
 		String returnString = "";
 		if(type == 1){
-			for(ArrayList<Tile> x : Map){
+			for(Tile[] x : map){
 				for(Tile y : x){
 					returnString += "[" + y.toString() + "]";
 				}
@@ -54,15 +50,15 @@ public class GameMap {
 	}
 	
 	private void placeWumpus() {
-		// TODO Auto-generated method stub
+		// TODO Switch over to 
 		Random rand = new Random();
-		int x = rand.nextInt(Map.size());
-		int y = rand.nextInt(Map.get(0).size());
-		Map.get(x - 1).add(y, Tile.Blood);
-		Map.get(x).add(y, Tile.theWumpus);
-		Map.get(x + 1).add(y, Tile.Blood);
-		Map.get(x).add(y - 1, Tile.Blood);
-		Map.get(x).add(y + 1, Tile.Blood);
+		int x = rand.nextInt(map.length);
+//		int y = rand.nextInt(map.get(0).size());
+//		map.get(x - 1).add(y, Tile.Blood);
+//		map.get(x).add(y, Tile.theWumpus);
+//		map.get(x + 1).add(y, Tile.Blood);
+//		map.get(x).add(y - 1, Tile.Blood);
+//		map.get(x).add(y + 1, Tile.Blood);
 	}
 	
 	// takes how many pits we want
