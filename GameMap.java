@@ -31,15 +31,15 @@ public class GameMap {
 	public String displayMap(int type) {
 		String returnString = "";
 		if (type == 1) {
-			for (Tile[] x : map) {
-				for (Tile y : x) {
+			for (Tile[] Array1D : map) {
+				for (Tile y : Array1D) {
 					returnString += "[" + y.toString() + "]";
 				}
 				returnString += "\n";
 			}
 		} else {
-			for (Tile[] x : map) {
-				for (Tile y : x) {
+			for (Tile[] Array1D : map) {
+				for (Tile y : Array1D) {
 					returnString += "";
 				}
 			}
@@ -50,12 +50,14 @@ public class GameMap {
 	}
 
 	private void populateMap() {
+		
 		// TODO Auto-generated method stub
 		for (Tile[] x : map) {
 			for (Tile y : x) {
-				y = Tile.Empty;
+				y = Tile.Blood;
 			}
 		}
+		
 		placeWumpus();
 		placePits(4);
 		placeHunter();
@@ -66,19 +68,19 @@ public class GameMap {
 		Random rand = new Random();
 		int x = rand.nextInt(mapX - 1);
 		int y = rand.nextInt(mapY - 1);
-		place(Tile.theWumpus, x, y);
-		place(Tile.Blood, x - 1, y);
-		place(Tile.Blood, x - 1, y + 1);
-		place(Tile.Blood, x - 1, y - 1);
-		place(Tile.Blood, x + 1, y);
-		place(Tile.Blood, x + 1, y + 1);
-		place(Tile.Blood, x + 1, y - 1);
-		place(Tile.Blood, x - 2, y);
-		place(Tile.Blood, x + 2, y);
-		place(Tile.Blood, x, y + 1);
-		place(Tile.Blood, x, y + 2);
-		place(Tile.Blood, x, y - 1);
-		place(Tile.Blood, x, y - 2);
+//		place(Tile.theWumpus, x, y);
+//		place(Tile.Blood, x - 1, y);
+//		place(Tile.Blood, x - 1, y + 1);
+//		place(Tile.Blood, x - 1, y - 1);
+//		place(Tile.Blood, x + 1, y);
+//		place(Tile.Blood, x + 1, y + 1);
+//		place(Tile.Blood, x + 1, y - 1);
+//		place(Tile.Blood, x - 2, y);
+//		place(Tile.Blood, x + 2, y);
+//		place(Tile.Blood, x, y + 1);
+//		place(Tile.Blood, x, y + 2);
+//		place(Tile.Blood, x, y - 1);
+//		place(Tile.Blood, x, y - 2);
 	}
 
 	private void place(Tile tileType, int xLoc, int yLoc) {
@@ -126,7 +128,43 @@ public class GameMap {
 
 	// move the hunter based on the command 
     public void moveHunter(String command){
+    
+    	int localX = hunterX;
+    	int localY = hunterY;
+    
+    	switch(command){
+    		case "go north":{
+				localX = hunterX + 1;
+    		}
+    		case "go south":{
+    			localX = hunterX - 1;
+    		}
+    		case "go east":{
+    			localY = hunterY + 1;
+    		}
+    		case "go west":{
+    			localY = hunterY + 1;
+    		}
+    	}
     	
+    	// make sure that hunter position is valid, if not, correct it
+    	if(localX > (mapX - 1)){
+    		hunterX = 0;
+    	}else if(localX < 0){
+    		hunterX = mapX - 1;
+    	}
+    	
+    	if(localY > (mapY - 1)){
+    		hunterY = 0;
+    	}else if(localY < 0){
+    		hunterY = mapY - 1;
+    	}
+    	
+    	
+    	
+    	// if command == shoot up || down, do the same loop
+    	// if command == shoot right || left, do the same loop
+    				
     }
     // dont forget the shoot arrow
     
