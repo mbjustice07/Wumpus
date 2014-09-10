@@ -27,29 +27,7 @@ public class GameMap {
 
 		populateMap();
 	}
-
-	// display the map, if type 0, display only visible, if type 1, display all
-	public String displayMap(int type) {
-		String returnString = "";
-		if (type == 1) {
-			for (Tile[] Array1D : map) {
-				for (Tile y : Array1D) {
-					returnString += "[" + y.toString() + "]";
-				}
-				returnString += "\n";
-			}
-		} else {
-			for (Tile[] Array1D : map) {
-				for (Tile y : Array1D) {
-					returnString += "";
-				}
-			}
-		}
-
-		return returnString;
-
-	}
-
+	
 	private void populateMap() {
 		
 		// TODO Auto-generated method stub
@@ -58,11 +36,52 @@ public class GameMap {
 				map[i][j] = Tile.Empty;
 			}
 		}
-		System.out.println(displayMap(0));
+		
+		System.out.println(displayMap(1));
 		
 		placeWumpus();
 		placePits(4);
 		placeHunter();
+		
+		System.out.println(displayMap(1));
+		
+	}
+
+	// display the map, if type 0, display only visible, if type 1, display all
+	public String displayMap(int type) {
+		String returnString = "";
+		
+		//display all contents
+		if (type == 1) {
+			for(int x = 0; x < map.length - 1; x++){
+				for(int y = 0; y < map[0].length - 1; x++){
+					returnString += "[" + map[x][y].getValue() + "]";
+				}
+				returnString += "\n";
+			}
+//			for (Tile[] Array1D : map) {
+//				for (Tile y : Array1D) {
+//					returnString += "[" + y.getValue() + "]";
+//				}
+//				returnString += "\n";
+//			}
+		} else {
+			for(int x = 0; x < map.length - 1; x++){
+				for(int y = 0; y < map[0].length - 1; x++){
+					returnString += "[" + map[x][y].toString() + "]";
+				}
+				returnString += "\n";
+			}
+//			for (Tile[] Array1D : map) {
+//				for (Tile y : Array1D) {
+//					returnString += "[" + y.toString() + "]";
+//				}
+//				returnString += "\n";
+//			}
+		}
+
+		return returnString;
+
 	}
 
     // places both the wumpus and then the blood around it
@@ -268,6 +287,16 @@ public class GameMap {
     			if(map[hunterX][i] == Tile.theWumpus){
     				// return checkGameOver false, you have won
     			}else if(i == hunterY){
+    				// return checkGameOver true, you have lost
+    			}
+    		}
+    	}
+    	
+    	if(command.equals("shoot east") || command.equals("shoot west")){
+    		for(int i = hunterX + 1; i < map.length; i++){
+    			if(map[i][hunterY] == Tile.theWumpus){
+    				// return checkGameOver false, you have won
+    			}else if(i == hunterX){
     				// return checkGameOver true, you have lost
     			}
     		}
