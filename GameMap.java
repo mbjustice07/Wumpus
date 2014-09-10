@@ -44,23 +44,41 @@ public class GameMap {
 	
 	private void populateMap() {
 		// TODO Auto-generated method stub
-		//placeWumpus();
-		//placePits(4);
-		//placeHunter();
+		placeWumpus();
+		placePits(4);
+		placeHunter();
 	}
 	
+	// places both the wumpus and then the blood around it
 	private void placeWumpus() {
-		// TODO Switch over to 
 		Random rand = new Random();
-		int x = rand.nextInt(map.length);
-//		int y = rand.nextInt(map.get(0).size());
-//		map.get(x - 1).add(y, Tile.Blood);
-//		map.get(x).add(y, Tile.theWumpus);
-//		map.get(x + 1).add(y, Tile.Blood);
-//		map.get(x).add(y - 1, Tile.Blood);
-//		map.get(x).add(y + 1, Tile.Blood);
+		int x = rand.nextInt(mapX - 1);
+		int y = rand.nextInt(mapY - 1);
+		place(Tile.theWumpus, x, y);
+		place(Tile.Blood, x - 1, y);
+		place(Tile.Blood, x - 1, y + 1);
+		place(Tile.Blood, x - 1, y - 1);
+		place(Tile.Blood, x + 1, y);
+		place(Tile.Blood, x + 1, y + 1);
+		place(Tile.Blood, x + 1, y - 1);
+		place(Tile.Blood, x - 2, y);
+		place(Tile.Blood, x + 2, y);
+		place(Tile.Blood, x , y + 1);
+		place(Tile.Blood, x , y + 2);
+		place(Tile.Blood, x , y - 1);
+		place(Tile.Blood, x , y - 2);
 	}
 	
+	private void place(Tile tileType, int xLoc, int yLoc) {
+		// TODO need to implement the wrap arround in here
+		
+		// if there is blood where we want to put slime, make goop
+		if( (tileType == Tile.Slime) && (map[xLoc][yLoc] == Tile.Blood) ){
+			map[xLoc][yLoc] = Tile.Goop;
+		}
+		
+	}
+
 	// takes how many pits we want
 	private void placePits(int num) {
 		// TODO Auto-generated method stub	
