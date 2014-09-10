@@ -11,14 +11,14 @@ public class HuntTheWumpusGame {
     public static void main(String args[]){
        
     	GameMap Map = new GameMap();
+    	Scanner input = new Scanner(System.in);
         /*
          * initialize the game board
          *
          */
        
         // Set up wumpus position and attribute positions
-    	Map.displayMap(1);
-    	Scanner input = new Scanner(System.in);
+    	
     	
     }
    
