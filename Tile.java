@@ -1,32 +1,46 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  *
  * @author Justice
+ * 
+ * [O] Hunter
+[X] Hidden Room (not yet visited)
+[S] Slime
+[B] Blood
+[G] Goop (blood and slime in the same room)
+[W] Wumpus
+[P] Pit
+[ ] Visited room with nothing in it
  */
 import java.util.*;
 
 
 public enum Tile {
-    Empty(0), Blood(1), Slime(2), Goop(3), bottomLessPits(4), theWumpus(5);
+    Blood("B"), Slime("S"), Goop("G"), bottomLessPits("P"), theWumpus("W"),
+    Hunter("O"),Empty(" ");
    
-    private int tileVal;
-    
-    private Tile(){
-    	this.tileVal = 0;
-    }
+    private String tileVal;
+    private boolean isVisible = false;
    
     // Constructor for game tiles
-    private Tile(int value){
+    private Tile(String value){
         this.tileVal = value;
     }
    
     // Getter for the tile
-    public int getTile(){
+    public String getTile(){
         return tileVal;
+    }
+    
+    public void setVisible(){
+    	isVisible = true;
+    }
+    
+    public String toString(){
+    	if(isVisible){
+    		return tileVal;
+    	}else{
+    		return "X";
+    	}
     }
    
 }
