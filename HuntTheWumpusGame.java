@@ -23,12 +23,7 @@ public class HuntTheWumpusGame {
     		Map.moveHunter(input.nextLine());  
     	}    	
     }
-   
-    // go north, south, east, west
-    // shoot north, south, east, west
-    
-    
-    
+
     /*
      * directionKey() method takes user from the input as to the direction of where the hunter will move
      * or which direction the arrow will be shot

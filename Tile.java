@@ -19,12 +19,10 @@ public enum Tile {
     Hunter("O"), Empty(" ");
 
     private String tileVal = " ";
-    private boolean isVisible = false;
    
     // Constructor for game tiles
     private Tile(String value){
         this.tileVal = value;
-        this.isVisible = false;
     }
    
     // Getter for the tile
@@ -33,11 +31,7 @@ public enum Tile {
     }
     
     public String toString(){
-    	if(isVisible){
     		return tileVal;
-    	}else{
-    		return "X";
-    	}
     }
    
 }
