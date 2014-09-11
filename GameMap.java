@@ -216,7 +216,7 @@ public class GameMap {
 			int x = rand.nextInt(mapX - 1); // get random x value
 			int y = rand.nextInt(mapY - 1); // get random y value
 
-			if (map[x][y] != Tile.theWumpus || map[x][y] != Tile.bottomLessPits) {
+			if (map[x][y] == Tile.Empty) {
 
 				this.hunterX = x;
 				this.hunterY = y;
@@ -324,27 +324,27 @@ public class GameMap {
 		stateTileType();
 
 		if (command.equals("shoot north") || command.equals("shoot south")) {
-			for (int i = hunterY + 1; i < map[0].length; i++) {
+			for (int i = 0; i < mapY; i++) {
 				if (map[hunterX][i] == Tile.theWumpus) {
 					System.out.println("WUMPUS HIT!");
-					this.arrowCode = 1;
-				} else if (i == hunterY) {
-					System.out.println("YOU MISSED AN HIT YOURSELF!");
 					this.arrowCode = 2;
+					return;
 				}
 			}
+			System.out.println("YOU MISSED AND HIT YOURSELF!");
+			this.arrowCode = 1;
 		}
 
 		if (command.equals("shoot east") || command.equals("shoot west")) {
-			for (int i = hunterX + 1; i < map.length; i++) {
+			for (int i = 0; i < mapX; i++) {
 				if (map[i][hunterY] == Tile.theWumpus) {
 					System.out.println("WUMPUS HIT!");
-					this.arrowCode = 1;
-				} else if (i == hunterX) {
-					System.out.println("YOU MISSED AN HIT YOURSELF!");
 					this.arrowCode = 2;
+					return;
 				}
 			}
+			System.out.println("YOU MISSED AN HIT YOURSELF!");
+			this.arrowCode = 1;
 		}
 
 		// if command == shoot up || down, do the same loop
