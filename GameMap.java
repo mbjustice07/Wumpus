@@ -61,7 +61,9 @@ public class GameMap {
 		System.out.println(displayMap(1));
 
 		System.out.println("Normal Map View");
-		System.out.println("KILL THE WUMPUS!\nValid Commands:\n\"go north\", \"go south\", \"go east\", \"go west\" plus others");
+		System.out
+				.println("KILL THE WUMPUS!\nValid Commands:\n\"go north\", \"go south\", \"go east\", \"go west\" "
+						+ "\n\"shoot north\", \"shoot south\", \"shoot east\", \"shoot west\"");
 		stateTileType();
 		System.out.println(displayMap(0));
 
@@ -160,46 +162,48 @@ public class GameMap {
 	// takes how many pits we want
 	// not overriding wumpus, slime also cannot replace wumpus
 	private void placePits(int num) {
+		for (int i = 0; i < num; i++) {
 
-		Random rand = new Random();
-		boolean pitPlaced = false;
-		int x = 0, y = 0;
+			Random rand = new Random();
+			boolean pitPlaced = false;
+			int x = 0, y = 0;
 
-		int[] w = wrapAround(x, y);
+			int[] w = wrapAround(x, y);
 
-		while (!pitPlaced) {
-			x = rand.nextInt(mapX - 1);
-			y = rand.nextInt(mapY - 1);
+			while (!pitPlaced) {
+				x = rand.nextInt(mapX - 1);
+				y = rand.nextInt(mapY - 1);
 
-			w = wrapAround(x, y);
+				w = wrapAround(x, y);
 
-			if (map[x][y] != Tile.bottomLessPits
-					|| map[w[0]][y] != Tile.bottomLessPits
-					|| map[w[2]][y] != Tile.bottomLessPits
-					|| map[x][w[3]] != Tile.bottomLessPits
-					|| map[x][w[1]] != Tile.bottomLessPits
-					|| map[x][y] != Tile.theWumpus
-					|| map[w[0]][y] != Tile.theWumpus
-					|| map[w[2]][y] != Tile.theWumpus
-					|| map[x][w[3]] != Tile.theWumpus
-					|| map[x][w[1]] != Tile.theWumpus)
-				pitPlaced = true;
+				if (map[x][y] != Tile.bottomLessPits
+						|| map[w[0]][y] != Tile.bottomLessPits
+						|| map[w[2]][y] != Tile.bottomLessPits
+						|| map[x][w[3]] != Tile.bottomLessPits
+						|| map[x][w[1]] != Tile.bottomLessPits
+						|| map[x][y] != Tile.theWumpus
+						|| map[w[0]][y] != Tile.theWumpus
+						|| map[w[2]][y] != Tile.theWumpus
+						|| map[x][w[3]] != Tile.theWumpus
+						|| map[x][w[1]] != Tile.theWumpus)
+					pitPlaced = true;
 
+			}
+
+			/*
+			 * [x][2] [1][y] [x][y] [3][y] [x][4]
+			 */
+
+			place(Tile.bottomLessPits, x, y);
+			// location 1x
+			place(Tile.Slime, w[0], y);
+			// location 2y
+			place(Tile.Slime, x, w[1]);
+			// location 3x
+			place(Tile.Slime, w[2], y);
+			// location 4y
+			place(Tile.Slime, x, w[3]);
 		}
-
-		/*
-		 * [x][2] [1][y] [x][y] [3][y] [x][4]
-		 */
-
-		place(Tile.bottomLessPits, x, y);
-		// location 1x
-		place(Tile.Slime, w[0], y);
-		// location 2y
-		place(Tile.Slime, x, w[1]);
-		// location 3x
-		place(Tile.Slime, w[2], y);
-		// location 4y
-		place(Tile.Slime, x, w[3]);
 
 	}
 
@@ -238,7 +242,7 @@ public class GameMap {
 		 */
 
 		int[] coordinates = new int[8];
-		int X = this.mapX - 1, Y = this.mapY - 1;
+		int X = this.mapX, Y = this.mapY;
 		// fixing the x coordinates
 		coordinates[0] = (x - 1 + X) % X;
 
@@ -265,9 +269,9 @@ public class GameMap {
 		if (!command.equals("go north") && !command.equals("go south")
 				&& !command.equals("go east") && !command.equals("go west")
 				&& !command.equals("shoot north")
-				&& !command.equals("shoot north")
-				&& !command.equals("shoot north")
-				&& !command.equals("shoot north")) {
+				&& !command.equals("shoot south")
+				&& !command.equals("shoot east")
+				&& !command.equals("shoot west")) {
 			System.out.println("Please enter a valid command");
 			return;
 		}
@@ -299,9 +303,9 @@ public class GameMap {
 		// make sure that hunter position is valid, if not, correct it
 		if (localX == (mapX)) {
 			this.hunterX = 0;
-		}else if (localX == -1) {
+		} else if (localX == -1) {
 			this.hunterX = mapX - 1;
-		}else if (localX < mapX) {
+		} else if (localX < mapX) {
 			this.hunterX = localX;
 		}
 
@@ -309,33 +313,38 @@ public class GameMap {
 			this.hunterY = 0;
 		} else if (localY == -1) {
 			this.hunterY = mapY - 1;
-		}else if (localY < mapY) {
+		} else if (localY < mapY) {
 			this.hunterY = localY;
 		}
-		
+
 		// check game over
 		checkGameOver();
 
 		// tell the player what tile they are on
 		stateTileType();
-		
 
 		if (command.equals("shoot north") || command.equals("shoot south")) {
 			for (int i = hunterY + 1; i < map[0].length; i++) {
 				if (map[hunterX][i] == Tile.theWumpus) {
-					//wumpus hit!
+					System.out.println("WUMPUS HIT!");
+					this.arrowCode = 1;
+				} else if (i == hunterY) {
+					System.out.println("YOU MISSED AN HIT YOURSELF!");
+					this.arrowCode = 2;
 				}
 			}
-			//game over we shot ourself
 		}
 
 		if (command.equals("shoot east") || command.equals("shoot west")) {
 			for (int i = hunterX + 1; i < map.length; i++) {
 				if (map[i][hunterY] == Tile.theWumpus) {
-					// wumpus hit!
-				}		
+					System.out.println("WUMPUS HIT!");
+					this.arrowCode = 1;
+				} else if (i == hunterX) {
+					System.out.println("YOU MISSED AN HIT YOURSELF!");
+					this.arrowCode = 2;
+				}
 			}
-			// game over, we shot ourself
 		}
 
 		// if command == shoot up || down, do the same loop
@@ -351,13 +360,15 @@ public class GameMap {
 	// check hunter position
 	// if hunter position is == wumpus || pit
 	// game over
-	
-	private void stateTileType(){
+
+	private void stateTileType() {
 		if (map[hunterX][hunterY].getValue().equals(Tile.Slime.getValue())) {
 			System.out.println("We are standing on green slime");
-		} else if (map[hunterX][hunterY].getValue().equals(Tile.Blood.getValue())) {
+		} else if (map[hunterX][hunterY].getValue().equals(
+				Tile.Blood.getValue())) {
 			System.out.println("We are standing on blood");
-		} else if (map[hunterX][hunterY].getValue().equals(Tile.Goop.getValue())) {
+		} else if (map[hunterX][hunterY].getValue()
+				.equals(Tile.Goop.getValue())) {
 			System.out.println("We are standing on goop");
 		} else {
 			System.out.println("We are standing in an empty room");

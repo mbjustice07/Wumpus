@@ -20,8 +20,10 @@ public class HuntTheWumpusGame {
     	while(!gameOver){
     		System.out.println(Map.displayMap(0));
     		System.out.println("Enter a command");
-    		Map.moveHunter(input.nextLine());  
-    	}    	
+    		Map.moveHunter(input.nextLine());
+    		gameOver = Map.checkGameOver();
+    	}
+    	Map.displayMap(1);
     }
 
     /*
