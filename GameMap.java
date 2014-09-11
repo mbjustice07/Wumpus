@@ -4,6 +4,7 @@ import java.util.Random;
 public class GameMap {
 
 	private Tile[][] map;
+	private boolean[][] visibleMap;
 	private int mapX, mapY;
 	private int hunterX, hunterY;
 	Random rand = new Random();
@@ -15,6 +16,7 @@ public class GameMap {
 		mapX = 10;
 		mapY = 10;
 		map = new Tile[10][10];
+		visibleMap = new boolean[10][10];
 
 		populateMap();
 	}
@@ -24,6 +26,7 @@ public class GameMap {
 		mapX = X;
 		mapY = Y;
 		map = new Tile[X][Y];
+		visibleMap = new boolean[X][Y];
 
 		populateMap();
 	}
@@ -37,13 +40,20 @@ public class GameMap {
 			}
 		}
 		
+		System.out.println("Map Before Population");
 		System.out.println(displayMap(1));
 		
 		placeWumpus();
+		
+		// TODO get this loop working correctly
 		placePits(4);
 		placeHunter();
 		
+		System.out.println("Map After Population");
 		System.out.println(displayMap(1));
+		
+		System.out.println("Normal Map View");
+		System.out.println(displayMap(0));
 		
 	}
 
@@ -53,9 +63,12 @@ public class GameMap {
 		
 		//display all contents
 		if (type == 1) {
-			for(int x = 0; x < map.length - 1; x++){
-				for(int y = 0; y < map[0].length - 1; x++){
-					returnString += "[" + map[x][y].getValue() + "]";
+			for(int x = 0; x < mapX - 1; x++){
+				for(int y = 0; y < mapY - 1; y++){
+					if(visibleMap[x][y] == true){
+						returnString += "[" + Tile.Hunter.getValue() + "]";
+					}else{
+						returnString += "[" + map[x][y].getValue() + "]";					}
 				}
 				returnString += "\n";
 			}
@@ -66,9 +79,12 @@ public class GameMap {
 //				returnString += "\n";
 //			}
 		} else {
-			for(int x = 0; x < map.length - 1; x++){
-				for(int y = 0; y < map[0].length - 1; x++){
-					returnString += "[" + map[x][y].toString() + "]";
+			for(int x = 0; x < mapX - 1; x++){
+				for(int y = 0; y < mapY - 1; y++){
+					if(visibleMap[x][y] == true){
+						returnString += "[" + Tile.Hunter.getValue() + "]";
+					}else{
+						returnString += "[" + map[x][y].toString() + "]";					}
 				}
 				returnString += "\n";
 			}
@@ -128,7 +144,7 @@ public class GameMap {
     }
 
 	private void place(Tile tileType, int x, int y) {
-		// TODO need to implement the wrap arround in here
+		// TODO need to implement the wrap around in here
 
 		// if there is blood where we want to put slime, make goop
 		if ((tileType == Tile.Slime) && (map[x][y] == Tile.Blood)) {
@@ -140,7 +156,8 @@ public class GameMap {
 	}
 
 	// takes how many pits we want
-	// takes how many pits we want
+	// TODO make sure that we place pits in valid spots,
+	// 		not overriding wumpus, slime also cannot replace wumpus
 	private void placePits(int num) {
             
                 Random rand = new Random();
@@ -148,8 +165,8 @@ public class GameMap {
                 int     x = 0,
                         y = 0;
                 
-                int [] w = wrapAround(x,y);;
-                
+                int [] w = wrapAround(x,y);
+
                 while (!pitPlaced){
                     x = rand.nextInt(mapX - 1);
                     y = rand.nextInt(mapY - 1);
@@ -157,18 +174,19 @@ public class GameMap {
                     w = wrapAround(x,y);
                     
                     if(map[x][y] != Tile.bottomLessPits
-                            || map[w[1]][y] != Tile.bottomLessPits
-                            || map[w[3]][y] != Tile.bottomLessPits
-                            || map[x][w[4]] != Tile.bottomLessPits
-                            || map[x][w[2]] != Tile.bottomLessPits
+                            || map[w[0]][y] != Tile.bottomLessPits
+                            || map[w[2]][y] != Tile.bottomLessPits
+                            || map[x][w[3]] != Tile.bottomLessPits
+                            || map[x][w[1]] != Tile.bottomLessPits
                             || map[x][y]    != Tile.theWumpus
-                            || map[w[1]][y] != Tile.theWumpus
-                            || map[w[3]][y] != Tile.theWumpus
-                            || map[x][w[4]] != Tile.theWumpus
-                            || map[x][w[2]] != Tile.theWumpus)
+                            || map[w[0]][y] != Tile.theWumpus
+                            || map[w[2]][y] != Tile.theWumpus
+                            || map[x][w[3]] != Tile.theWumpus
+                            || map[x][w[1]] != Tile.theWumpus)
                         pitPlaced = true;
                 
                 }
+
                     /*          [x][2]
                      *   [1][y] [x][y] [3][y] 
                      *  	[x][4]
@@ -176,13 +194,13 @@ public class GameMap {
                 
                     place(Tile.bottomLessPits, x, y);
                     // location 1x
-                    place(Tile.Slime, w[1], y);
+                    place(Tile.Slime, w[0], y);
                     // location 2y
-                    place(Tile.Slime, x, w[2]);
+                    place(Tile.Slime, x, w[1]);
                     //location 3x
-                    place(Tile.Slime, w[3], y);
+                    place(Tile.Slime, w[2], y);
                     //location 4y
-                    place(Tile.Slime, x, w[4]);
+                    place(Tile.Slime, x, w[3]);
                 
             
 	}
@@ -201,6 +219,7 @@ public class GameMap {
                 
                 this.hunterX = x;
                 this.hunterY = y;
+                this.visibleMap[x][y] = true;
                 hunterPlaced = true;
             }
         
@@ -227,29 +246,31 @@ public class GameMap {
             
             
 		int[] coordinates = new int[8];
-
+		int X = this.mapX - 1, Y = this.mapY - 1;
 		// fixing the x coordinates
-		coordinates[0] = (x - 1 + this.mapX) % this.mapX;
+		coordinates[0] = (x - 1 + X) % X;
 
-		coordinates[1] = (y + 1 + this.mapY) % this.mapY;
+		coordinates[1] = (y + 1 + Y) % Y;
 
-		coordinates[2] = (x + 1 + this.mapX) % this.mapX;
+		coordinates[2] = (x + 1 + X) % X;
 
-		coordinates[3] = (y - 1 + this.mapY) % this.mapY;
+		coordinates[3] = (y - 1 + Y) % Y;
                 
-                coordinates[4] = (x - 2 + this.mapX) % this.mapX;
+                coordinates[4] = (x - 2 + X) % X;
                 
-                coordinates[5] = (y + 2 + this.mapY) % this.mapY;
+                coordinates[5] = (y + 2 + Y) % Y;
                 
-                coordinates[6] = (x + 2 + this.mapX) % this.mapX;
+                coordinates[6] = (x + 2 + X) % X;
 
-                coordinates[7] = (y - 2 + this.mapY) % this.mapY;
+                coordinates[7] = (y - 2 + Y) % Y;
                
 		return coordinates;
 	}
 
 	// move the hunter based on the command 
     public void moveHunter(String command){
+    	
+    	this.visibleMap[hunterX][hunterY] = true;
     
     	int localX = hunterX;
     	int localY = hunterY;
@@ -265,6 +286,19 @@ public class GameMap {
     			localY = hunterY + 1;
     		}
     		case "go west":{
+    			localY = hunterY + 1;
+    		}
+    		// TODO write shoot method
+    		case "shoot north":{
+				localX = hunterX + 1;
+    		}
+    		case "shoot south":{
+    			localX = hunterX - 1;
+    		}
+    		case "shoot east":{
+    			localY = hunterY + 1;
+    		}
+    		case "shoot west":{
     			localY = hunterY + 1;
     		}
     	}

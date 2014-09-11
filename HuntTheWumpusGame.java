@@ -12,14 +12,16 @@ public class HuntTheWumpusGame {
        
     	GameMap Map = new GameMap();
     	Scanner input = new Scanner(System.in);
-        /*
+        boolean gameOver = false;
+		/*
          * initialize the game board
          *
          */
-       
-        // Set up wumpus position and attribute positions
-    	
-    	
+    	while(!gameOver){
+    		System.out.println(Map.displayMap(0));
+    		System.out.println("Enter a command");
+    		Map.moveHunter(input.nextLine());  
+    	}    	
     }
    
     // go north, south, east, west
