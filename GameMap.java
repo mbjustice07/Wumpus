@@ -1,18 +1,22 @@
-import java.util.ArrayList;
 import java.util.Random;
 
-//say that there is something on the floor isf there is something
+//say that there is something on the floor is there is something
 
 public class GameMap {
 
-	private Tile[][] map;
-	private boolean[][] visibleMap;
-	private int mapX, mapY;
-	private int hunterX, hunterY;
-	private int arrowCode = 0;
+	private Tile[][] map; // stores the map values
+	private boolean[][] visibleMap; // stores the map that tells whether we can display a tile value
+	private int mapX, mapY; //  stores the size of the map
+	private int hunterX, hunterY; //  stores the hunters position
+	private int arrowCode = 0; //    stores the arrow code
 	Random rand = new Random();
 
-	// private ArrayList<ArrayList<Tile>> Map;
+	// test constructor will produce a 2D tile array, and place the hunter at xVal and yVal
+	public GameMap(Tile[][] tilePreset, int xVal, int yVal) {
+		map = tilePreset;
+		visibleMap = new boolean[10][10];
+		
+	}
 
 	// default constructor will produce a 10 x 10 map
 	public GameMap() {
@@ -34,6 +38,7 @@ public class GameMap {
 		populateMap();
 	}
 
+	// initialize the map
 	private void populateMap() {
 
 		for (int i = 0; i < map.length; i++) {
@@ -48,21 +53,12 @@ public class GameMap {
 			}
 		}
 
-		System.out.println("Map Before Population");
-		System.out.println(displayMap(1));
-
+		// place Wumpus, Pits, Blood, Slime, Goop, and Hunter on the Game map
 		placeWumpus();
-
-		// TODO get this loop working correctly
 		placePits(4);
 		placeHunter();
-
-		System.out.println("Map After Population");
 		System.out.println(displayMap(1));
-
-		System.out.println("Normal Map View");
-		System.out
-				.println("KILL THE WUMPUS!\nValid Commands:\n\"go north\", \"go south\", \"go east\", \"go west\" "
+		System.out.println("KILL THE WUMPUS!\nValid Commands:\n\"go north\", \"go south\", \"go east\", \"go west\" "
 						+ "\n\"shoot north\", \"shoot south\", \"shoot east\", \"shoot west\"");
 		stateTileType();
 		System.out.println(displayMap(0));
@@ -107,7 +103,13 @@ public class GameMap {
 
 	}
 
-	// places both the wumpus and then the blood around it
+	/*
+	 * PlaceWumpus() method takes no input. It makes a random number within the
+	 * confines of the game map indices. It then calls the wrapAround() method
+	 * that takes the random location and places blood into the correct
+	 * location. It then calls the place() method giving it the tileType, and
+	 * the coordinates of where to place the tile.
+	 */
 	private void placeWumpus() {
 		Random rand = new Random();
 		int x = rand.nextInt(mapX - 1);
@@ -132,7 +134,6 @@ public class GameMap {
 		place(Tile.Blood, x, w[3]);
 		// location 5x
 		place(Tile.Blood, w[4], y);
-		// location 6y
 		place(Tile.Blood, x, w[5]);
 		// location 7x
 		place(Tile.Blood, w[6], y);
@@ -148,6 +149,13 @@ public class GameMap {
 		place(Tile.Blood, w[0], w[3]);
 	}
 
+	/*
+	 * Place tile method takes a tile type from the caller and the x and y
+	 * coordinates of where to place it.
+	 * 
+	 * If a slime tile is being placed on a tile already containing blood it
+	 * turns the tile into the goop type.
+	 */
 	private void place(Tile tileType, int x, int y) {
 
 		// if there is blood where we want to put slime, make goop
@@ -159,54 +167,77 @@ public class GameMap {
 
 	}
 
-	// takes how many pits we want
-	// not overriding wumpus, slime also cannot replace wumpus
-	private void placePits(int num) {
-		for (int i = 0; i < num; i++) {
+	/*
+	 * placePits method takes a number determined randomly and creates a number
+	 * of pits corresponding. It takes a random spot and runs the wrap around
+	 * method. If the pit or blood is being placed in a position already
+	 * occupied it searches for a new location and will continue until it finds
+	 * an unoccupied location.
+	 */
+    private void placePits(int num) {
 
-			Random rand = new Random();
-			boolean pitPlaced = false;
-			int x = 0, y = 0;
+        for (int i = 0; i < num; i++) {
 
-			int[] w = wrapAround(x, y);
+            Random rand = new Random();
+            boolean pitPlaced = false;
+            int x = 0,
+                y = 0;
 
-			while (!pitPlaced) {
-				x = rand.nextInt(mapX - 1);
-				y = rand.nextInt(mapY - 1);
+                int [] w = wrapAround(x,y);
+                
+                /* 
+                 * While the pit has not found a location a to place the pit
+                 * check all the surround cells to makes sure the slime or pit
+                 * cover another bottomless pit or the wumpus.  If it is then the 
+                 * pit location is not found and so retry another location.
+                 */
+                while (!pitPlaced){
+                    x = rand.nextInt(mapX - 1);
+                    y = rand.nextInt(mapY - 1);
+                
+                    w = wrapAround(x,y);  // wrap around method calculates the wrapper
+                    
+                    if(map[x][y] != Tile.bottomLessPits
+                            || map[w[0]][y] != Tile.bottomLessPits // left cell
+                            || map[w[2]][y] != Tile.bottomLessPits  // right cell
+                            || map[x][w[3]] != Tile.bottomLessPits // bottom cell
+                            || map[x][w[1]] != Tile.bottomLessPits // top cell
+                            || map[x][y]    != Tile.theWumpus       // the center cell
+                            || map[w[0]][y] != Tile.theWumpus       // the left
+                            || map[w[2]][y] != Tile.theWumpus       // right
+                            || map[x][w[3]] != Tile.theWumpus       // bottom
+                            || map[x][w[1]] != Tile.theWumpus)      // bottom
+                        pitPlaced = true;
+                
+                }
 
-				w = wrapAround(x, y);
+                    /*          [x][2]
+                     *   [1][y] [x][y] [3][y] 
+                     *  	[x][4]
+                     */
+                // when the pit is found place it.  If there is slime and blood
+                // place goop instead
+                    place(Tile.bottomLessPits, x, y);
+                    // location 1x
+                    place(Tile.Slime, w[0], y);
+                    // location 2y
+                    place(Tile.Slime, x, w[1]);
+                    //location 3x
+                    place(Tile.Slime, w[2], y);
+                    //location 4y
+                    place(Tile.Slime, x, w[3]);
+        }
 
-				if (map[x][y] != Tile.bottomLessPits
-						|| map[w[0]][y] != Tile.bottomLessPits
-						|| map[w[2]][y] != Tile.bottomLessPits
-						|| map[x][w[3]] != Tile.bottomLessPits
-						|| map[x][w[1]] != Tile.bottomLessPits
-						|| map[x][y] != Tile.theWumpus
-						|| map[w[0]][y] != Tile.theWumpus
-						|| map[w[2]][y] != Tile.theWumpus
-						|| map[x][w[3]] != Tile.theWumpus
-						|| map[x][w[1]] != Tile.theWumpus)
-					pitPlaced = true;
-
-			}
-
-			/*
-			 * [x][2] [1][y] [x][y] [3][y] [x][4]
-			 */
-
-			place(Tile.bottomLessPits, x, y);
-			// location 1x
-			place(Tile.Slime, w[0], y);
-			// location 2y
-			place(Tile.Slime, x, w[1]);
-			// location 3x
-			place(Tile.Slime, w[2], y);
-			// location 4y
-			place(Tile.Slime, x, w[3]);
-		}
-
-	}
-
+    }
+	
+	
+	/*
+	 * placeHunter() method is the last method called when setting up the
+	 * gameboard. It will run a while searching for a random location with where
+	 * to place the hunter. It checks that the hunter isn't placed in a location
+	 * containing the wumpus or a bottomless pit. When the hunter is placed
+	 * hunterPlaced value is set to true, indicating that the hunter was placed.
+	 */
 	private void placeHunter() {
 
 		boolean hunterPlaced = false; // boolean value for loop
@@ -227,6 +258,16 @@ public class GameMap {
 		}
 	}
 
+	/*
+	 * The wrapAround method takes an x and y coordinate and calculates the
+	 * location of the tiles that surround the pits and the wumpus and creates a
+	 * wrap around effect on the 2D array. It returns the values in an array of
+	 * type int.
+	 * 
+	 * The order of the of the array is important to the corresponding location
+	 * of the tiles. Please see diagrams associated. Please note the indices are
+	 * off.
+	 */
 	private int[] wrapAround(int x, int y) {
 		// the first 4 values in the array are the x coordinates
 		// the last 4 values are the y coordinates
@@ -263,7 +304,7 @@ public class GameMap {
 		return coordinates;
 	}
 
-	// move the hunter based on the command
+	// move the hunter based on the command that is given
 	public void moveHunter(String command) {
 
 		if (!command.equals("go north") && !command.equals("go south")
@@ -352,15 +393,7 @@ public class GameMap {
 
 	}
 
-	// dont forget the shoot arrow
-
-	// get command
-	// move hunter
-	// set tile visible to true
-	// check hunter position
-	// if hunter position is == wumpus || pit
-	// game over
-
+	// Print the tile that the hunter is on to the user
 	private void stateTileType() {
 		if (map[hunterX][hunterY].getValue().equals(Tile.Slime.getValue())) {
 			System.out.println("We are standing on green slime");
@@ -375,6 +408,15 @@ public class GameMap {
 		}
 	}
 
+	/*
+	 * checkGameOver() it checks the current location of the hunter as compared
+	 * to the 2D map. If the hunter is over the Wumpus or a bottom less pit, the
+	 * game is over and it prints to screen what happened. It displays the same
+	 * message for a pit and the wumpus. If the hunter shoots an arrow it
+	 * changes the arrowcode method to a corresponding code. If the arrow hit
+	 * the wumpus it sets the code to 2 and prints the message. If it is 1 it
+	 * means the Wumpus got to the hunter.
+	 */
 	public boolean checkGameOver() {
 
 		// hunters position

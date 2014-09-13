@@ -3,7 +3,6 @@
  * and open the template in the editor.
  */
 
-import java.awt.event.KeyEvent;
 import java.util.Scanner;
 
 public class HuntTheWumpusGame {
@@ -24,6 +23,7 @@ public class HuntTheWumpusGame {
     		gameOver = Map.checkGameOver();
     	}
     	Map.displayMap(1);
+    	input.close();
     }
 
     /*
